@@ -16,3 +16,4 @@
 
 routers/commentsRouter_controllers.go
 swagger/*
+.idea/*
