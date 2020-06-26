@@ -1,6 +1,6 @@
 // @APIVersion 1.0.0
 // @Title API DOCUMENTATION
-// @Description beego has a very cool tools to autogenerate documents for your API
+// @Description Beego API with JWT implementation and Neo4j database
 // @Contact quangvuong0805@gmail.com
 // @TermsOfServiceUrl http://vuongdq.com/
 // @License Apache 2.0
@@ -10,10 +10,15 @@ package routers
 import (
 	"Neo4jCURD/controllers"
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/plugins/cors"
+	"github.com/astaxie/beego/context"
 )
 
 func init() {
+
+	beego.Get("/", func(ctx *context.Context) {
+		_ = ctx.Output.Body([]byte("This is a Beego + JWT API - Creator: vuongdq85 (quangvuong0805@gmail.com)"))
+	})
+
 	ns := beego.NewNamespace("/v1",
 		beego.NSNamespace("/movie",
 			beego.NSInclude(
@@ -30,15 +35,12 @@ func init() {
 				&controllers.RelMoviePerson{},
 			),
 		),
+		beego.NSNamespace("/query",
+			beego.NSInclude(
+				&controllers.Query{},
+			),
+		),
 	)
 
 	beego.AddNamespace(ns)
-	beego.Debug("Filters init...")
-	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{"GET", "PUT", "POST", "DELETE"},
-		AllowHeaders: []string{"Origin", "Authorization", "Access-Control-Allow-Origin"},
-		ExposeHeaders: []string{"Content-Length", "Access-Control-Allow-Origin"},
-		AllowCredentials: true,
-	}))
 }
