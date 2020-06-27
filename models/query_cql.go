@@ -16,10 +16,10 @@ type RespMoviesRec struct {
 }
 
 // Get Movie Recommendations for Person(name=?) // Michael Hunger
-func GetMovieRecommendationsPerson(namePerson string) (map[string]*MovieRec, error) {
+func GetMovieRecommendationsPerson(namePerson string) ([]*MovieRec, error) {
 	//fmt.Println(strings.Replace()namePerson)
 
-	results := make(map[string]*MovieRec)
+	//results := make(map[string]*MovieRec)
 	query := `MATCH    (b:Person)-[r:RATED]->(m:Movie), (b)-[s:SIMILARITY]-(a:Person {name: $nameperson})
 				WHERE    NOT((a)-[:RATED]->(m))
 				WITH     m, s.similarity AS similarity, r.rating AS rating
@@ -38,6 +38,8 @@ func GetMovieRecommendationsPerson(namePerson string) (map[string]*MovieRec, err
 		return nil, err
 	}
 
+	ListMovie := []*MovieRec{}
+	//i := 0
 	for result.Next() {
 		movie := fmt.Sprintf("%v", result.Record().GetByIndex(0))
 		recommendation := fmt.Sprintf("%v", result.Record().GetByIndex(1))
@@ -47,10 +49,12 @@ func GetMovieRecommendationsPerson(namePerson string) (map[string]*MovieRec, err
 			recommendation,
 		}
 
-		results[movie] = temp_MovieRec
+		ListMovie = append(ListMovie, temp_MovieRec)
+		//results[string(i)] = temp_MovieRec
+		//i++
 	}
 
-	return results, nil
+	return ListMovie, nil
 }
 
 // Add Cosine Similarities to the Graph
@@ -64,6 +68,7 @@ func AddCosineSimilarities() error {
 				SET s.similarity = xyDotProduct / (xLength * yLength)`
 
 	mapParams := map[string]interface{}{}
+
 	_, err := config.ResultQuery(query, mapParams)
 	if err != nil {
 		return err

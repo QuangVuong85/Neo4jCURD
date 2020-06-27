@@ -18,28 +18,27 @@ type QueryController struct {
 // @Failure 403 :personName not exists
 // @router /GetDatax [get]
 func (p *QueryController) Get() {
-	//personName := p.GetString(":personName")
 	var personName string
 	err := p.Ctx.Input.Bind(&personName,"personName")
-	fmt.Println("personName == ",personName)
+
 	if err != nil {
 		fmt.Println("err = ",err)
 	}
-	results, err := models.GetMovieRecommendationsPerson(personName)
-	list := make([]*models.MovieRec, 0)
+	results, _ := models.GetMovieRecommendationsPerson(personName)
+	/*list := make([]*models.MovieRec, 0)
 
 	for _, i := range results {
 		list = append(list, i)
-	}
+	}*/
 
 	var message string
-	if err != nil {
-		message = "Can't person have name " + personName
+	if len(results) == 0 {
+		message = "Person have name " + personName + " not in Nodes Person."
 	} else {
 		message = "Get Movie Recommendations for " + personName
 	}
 
-	p.Data["json"] = models.RespMoviesRec{message, list}
+	p.Data["json"] = models.RespMoviesRec{message, results}
 	p.ServeJSON()
 }
 
