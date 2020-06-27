@@ -37,7 +37,7 @@ func init() {
 		),
 		beego.NSNamespace("/query",
 			beego.NSInclude(
-				&controllers.Query{},
+				&controllers.QueryController{},
 			),
 		),
 	)
